@@ -18,9 +18,10 @@ input,select{font:inherit;padding:10px;border:1px solid var(--linha);border-radi
 input:focus-visible,select:focus-visible,button:focus-visible{outline:3px solid #a58bd6;outline-offset:1px}
 button{font:inherit;font-weight:600;padding:10px 16px;border:0;border-radius:6px;background:var(--roxo);color:#fff;cursor:pointer}
 button:hover{background:var(--roxo-esc)}button:disabled{opacity:.6}
-button.sec{background:transparent;color:var(--roxo);border:1px solid var(--roxo)}
 .erro{color:#b3261e;min-height:1.2em;margin:0;font-size:.9rem}
 header{background:var(--roxo);color:#fff;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.conta{display:flex;align-items:center;gap:12px;min-width:0}
+#logado{font-size:.9rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:260px}
 header button{background:#fff;color:var(--roxo)}
 main{padding:20px;max-width:1300px;margin:auto}
 .filtros{display:flex;flex-wrap:wrap;gap:12px;align-items:end;margin-bottom:16px}
@@ -30,6 +31,7 @@ table{border-collapse:collapse;width:100%;font-size:.92rem}
 th,td{padding:10px 12px;text-align:left;white-space:nowrap;border-bottom:1px solid var(--linha)}
 th{background:#ece7f5;position:sticky;top:0}
 .vazio{padding:28px;text-align:center;color:var(--suave)}
+@media (max-width:560px){#logado{max-width:140px}}
 </style>
 </head>
 <body>
@@ -44,7 +46,13 @@ th{background:#ece7f5;position:sticky;top:0}
 </section>
 
 <section id="telaApp" hidden>
-  <header><strong id="titulo">Minhas vendas</strong><button id="sair">Sair</button></header>
+  <header>
+    <strong id="titulo">Minhas vendas</strong>
+    <div class="conta">
+      <span id="logado" title="Usuário logado"></span>
+      <button id="sair">Sair</button>
+    </div>
+  </header>
   <main>
     <div class="filtros">
       <label>De<input type="date" id="ini"></label>
@@ -59,7 +67,7 @@ th{background:#ece7f5;position:sticky;top:0}
 </section>
 
 <script>
-const API = 'https://script.google.com/macros/s/AKfycbwqB1pz1d_kCleNlfjaAiSTPovmtmN4ucd6HX-6njBnsBKOn2YVgTA15Z6m17nxavNI/exec'; // URL do Web App (termina em /exec)
+const API = 'COLE_AQUI_A_URL_DO_APPS_SCRIPT'; // URL do Web App (termina em /exec)
 const $ = id => document.getElementById(id);
 let dados = null;
 
@@ -71,8 +79,9 @@ $('form').onsubmit = async e => {
   $('erro').textContent = '';
   $('entrar').disabled = true;
   try {
-    const r = await chamar({ acao: 'login', email: $('email').value, senha: $('senha').value });
-    if (r.ok) { sessionStorage.token = r.token; iniciar(); }
+    const email = $('email').value.trim();
+    const r = await chamar({ acao: 'login', email, senha: $('senha').value });
+    if (r.ok) { sessionStorage.token = r.token; sessionStorage.email = email.toLowerCase(); iniciar(); }
     else $('erro').textContent = r.erro;
   } catch { $('erro').textContent = 'Sem conexão com o servidor.'; }
   $('entrar').disabled = false;
@@ -82,6 +91,8 @@ function iniciar() {
   const h = new Date(), p = n => String(n).padStart(2, '0');
   $('ini').value = `${h.getFullYear()}-${p(h.getMonth() + 1)}-01`;
   $('fim').value = `${h.getFullYear()}-${p(h.getMonth() + 1)}-${p(h.getDate())}`;
+  $('logado').textContent = sessionStorage.email || '';
+  $('logado').title = sessionStorage.email || '';
   $('telaLogin').hidden = true; $('telaApp').hidden = false;
   carregar();
 }
@@ -123,7 +134,7 @@ function render() {
 }
 
 function sair() {
-  sessionStorage.removeItem('token'); dados = null;
+  sessionStorage.removeItem('token'); sessionStorage.removeItem('email'); dados = null;
   $('telaApp').hidden = true; $('telaLogin').hidden = false; $('senha').value = '';
 }
 
