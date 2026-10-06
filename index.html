@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Minhas vendas</title>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--roxo:#4b2f7a;--roxo-esc:#35205c;--fundo:#f5f3f9;--linha:#ddd6ea;--texto:#1d1730;--suave:#6b6483}
+*{box-sizing:border-box}
+body{margin:0;font-family:Figtree,system-ui,sans-serif;background:var(--fundo);color:var(--texto)}
+[hidden]{display:none!important}
+.login{min-height:100vh;display:grid;place-items:center;padding:20px}
+.login form{background:#fff;border:1px solid var(--linha);border-radius:10px;padding:32px;width:100%;max-width:360px;display:grid;gap:14px}
+h1{margin:0;font-size:1.4rem}
+label{display:grid;gap:6px;font-size:.9rem;font-weight:600}
+input,select{font:inherit;padding:10px;border:1px solid var(--linha);border-radius:6px;background:#fff;color:var(--texto)}
+input:focus-visible,select:focus-visible,button:focus-visible{outline:3px solid #a58bd6;outline-offset:1px}
+button{font:inherit;font-weight:600;padding:10px 16px;border:0;border-radius:6px;background:var(--roxo);color:#fff;cursor:pointer}
+button:hover{background:var(--roxo-esc)}button:disabled{opacity:.6}
+button.sec{background:transparent;color:var(--roxo);border:1px solid var(--roxo)}
+.erro{color:#b3261e;min-height:1.2em;margin:0;font-size:.9rem}
+header{background:var(--roxo);color:#fff;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;gap:12px}
+header button{background:#fff;color:var(--roxo)}
+main{padding:20px;max-width:1300px;margin:auto}
+.filtros{display:flex;flex-wrap:wrap;gap:12px;align-items:end;margin-bottom:16px}
+.total{color:var(--suave);margin:0 0 10px}
+.tabela{overflow-x:auto;background:#fff;border:1px solid var(--linha);border-radius:8px}
+table{border-collapse:collapse;width:100%;font-size:.92rem}
+th,td{padding:10px 12px;text-align:left;white-space:nowrap;border-bottom:1px solid var(--linha)}
+th{background:#ece7f5;position:sticky;top:0}
+.vazio{padding:28px;text-align:center;color:var(--suave)}
+</style>
+</head>
+<body>
+<section class="login" id="telaLogin">
+  <form id="form">
+    <h1>Entrar</h1>
+    <label>Email<input id="email" type="email" autocomplete="username" required></label>
+    <label>Senha<input id="senha" type="password" autocomplete="current-password" required></label>
+    <p class="erro" id="erro" role="alert"></p>
+    <button id="entrar">Entrar</button>
+  </form>
+</section>
+
+<section id="telaApp" hidden>
+  <header><strong id="titulo">Minhas vendas</strong><button id="sair">Sair</button></header>
+  <main>
+    <div class="filtros">
+      <label>De<input type="date" id="ini"></label>
+      <label>Até<input type="date" id="fim"></label>
+      <label id="boxVend" hidden>Vendedor<select id="vend"></select></label>
+      <label id="boxBusca" hidden>Buscar<input id="busca" placeholder="Cliente, ID, cidade…"></label>
+      <button id="filtrar">Filtrar</button>
+    </div>
+    <p class="total" id="total"></p>
+    <div class="tabela"><table id="tab"></table></div>
+  </main>
+</section>
+
+<script>
+const API = 'COLE_AQUI_A_URL_DO_APPS_SCRIPT'; // URL do Web App (termina em /exec)
+const $ = id => document.getElementById(id);
+let dados = null;
+
+const chamar = async b => (await fetch(API, { method: 'POST', body: JSON.stringify(b) })).json();
+const br = v => /^\d{4}-\d{2}-\d{2}$/.test(v) ? v.split('-').reverse().join('/') : v;
+
+$('form').onsubmit = async e => {
+  e.preventDefault();
+  $('erro').textContent = '';
+  $('entrar').disabled = true;
+  try {
+    const r = await chamar({ acao: 'login', email: $('email').value, senha: $('senha').value });
+    if (r.ok) { sessionStorage.token = r.token; iniciar(); }
+    else $('erro').textContent = r.erro;
+  } catch { $('erro').textContent = 'Sem conexão com o servidor.'; }
+  $('entrar').disabled = false;
+};
+
+function iniciar() {
+  const h = new Date(), p = n => String(n).padStart(2, '0');
+  $('ini').value = `${h.getFullYear()}-${p(h.getMonth() + 1)}-01`;
+  $('fim').value = `${h.getFullYear()}-${p(h.getMonth() + 1)}-${p(h.getDate())}`;
+  $('telaLogin').hidden = true; $('telaApp').hidden = false;
+  carregar();
+}
+
+async function carregar() {
+  $('total').textContent = 'Carregando…';
+  try {
+    const r = await chamar({ acao: 'vendas', token: sessionStorage.token, ini: $('ini').value, fim: $('fim').value });
+    if (r.expirada) return sair();
+    if (!r.ok) { $('total').textContent = r.erro; return; }
+    dados = r;
+    const master = r.perfil === 'master';
+    $('titulo').textContent = master ? 'Painel geral' : 'Minhas vendas';
+    $('boxVend').hidden = $('boxBusca').hidden = !master;
+    if (master) {
+      const i = r.colunas.findIndex(c => c.toLowerCase() === 'vendedor');
+      const nomes = i < 0 ? [] : [...new Set(r.linhas.map(l => l[i]))].sort();
+      $('vend').replaceChildren(new Option('Todos', ''), ...nomes.map(n => new Option(n, n)));
+    }
+    render();
+  } catch { $('total').textContent = 'Não foi possível carregar os dados.'; }
+}
+
+function render() {
+  const master = dados.perfil === 'master';
+  const iV = dados.colunas.findIndex(c => c.toLowerCase() === 'vendedor');
+  const q = $('busca').value.trim().toLowerCase(), vend = $('vend').value;
+  const ls = dados.linhas.filter(l =>
+    (!master || !vend || l[iV] === vend) &&
+    (!master || !q || l.some(c => c.toLowerCase().includes(q))));
+  $('total').textContent = ls.length + (ls.length === 1 ? ' venda no período' : ' vendas no período');
+  const tab = $('tab'); tab.replaceChildren();
+  if (!ls.length) { tab.innerHTML = '<tr><td class="vazio">Nenhuma venda encontrada neste período.</td></tr>'; return; }
+  const tr = (cels, tag) => { const r = document.createElement('tr');
+    cels.forEach(c => { const e = document.createElement(tag); e.textContent = br(c); r.append(e); }); return r; };
+  const th = document.createElement('thead'); th.append(tr(dados.colunas, 'th'));
+  const tb = document.createElement('tbody'); ls.forEach(l => tb.append(tr(l, 'td')));
+  tab.append(th, tb);
+}
+
+function sair() {
+  sessionStorage.removeItem('token'); dados = null;
+  $('telaApp').hidden = true; $('telaLogin').hidden = false; $('senha').value = '';
+}
+
+$('filtrar').onclick = carregar;
+$('busca').oninput = $('vend').onchange = () => dados && render();
+$('sair').onclick = sair;
+if (sessionStorage.token) iniciar();
+</script>
+</body>
+</html>
