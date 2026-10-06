@@ -3,145 +3,280 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Minhas vendas</title>
-<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700&display=swap" rel="stylesheet">
+<title>Portal de vendas</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--roxo:#4b2f7a;--roxo-esc:#35205c;--fundo:#f5f3f9;--linha:#ddd6ea;--texto:#1d1730;--suave:#6b6483}
+:root{--bg:#eef2fb;--card:#fff;--tx:#1c1b3a;--mu:#7d84a3;--ln:#e1e6f5;--ac:#2b8ef0;--sb1:#7389ee;--sb2:#5a6ddd;--hd:#efeafd}
+[data-tema=escuro]{--bg:#12142a;--card:#1b1e3a;--tx:#e8eaff;--mu:#9aa0c4;--ln:#2c3060;--ac:#5aa9ff;--sb1:#2f3880;--sb2:#232860;--hd:#2a2f60}
 *{box-sizing:border-box}
-body{margin:0;font-family:Figtree,system-ui,sans-serif;background:var(--fundo);color:var(--texto)}
+body{margin:0;font-family:Outfit,system-ui,sans-serif;background:var(--bg);color:var(--tx)}
 [hidden]{display:none!important}
-.login{min-height:100vh;display:grid;place-items:center;padding:20px}
-.login form{background:#fff;border:1px solid var(--linha);border-radius:10px;padding:32px;width:100%;max-width:360px;display:grid;gap:14px}
-h1{margin:0;font-size:1.4rem}
-label{display:grid;gap:6px;font-size:.9rem;font-weight:600}
-input,select{font:inherit;padding:10px;border:1px solid var(--linha);border-radius:6px;background:#fff;color:var(--texto)}
-input:focus-visible,select:focus-visible,button:focus-visible{outline:3px solid #a58bd6;outline-offset:1px}
-button{font:inherit;font-weight:600;padding:10px 16px;border:0;border-radius:6px;background:var(--roxo);color:#fff;cursor:pointer}
-button:hover{background:var(--roxo-esc)}button:disabled{opacity:.6}
-.erro{color:#b3261e;min-height:1.2em;margin:0;font-size:.9rem}
-header{background:var(--roxo);color:#fff;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;gap:12px}
-.conta{display:flex;align-items:center;gap:12px;min-width:0}
-#logado{font-size:.9rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:260px}
-header button{background:#fff;color:var(--roxo)}
-main{padding:20px;max-width:1300px;margin:auto}
-.filtros{display:flex;flex-wrap:wrap;gap:12px;align-items:end;margin-bottom:16px}
-.total{color:var(--suave);margin:0 0 10px}
-.tabela{overflow-x:auto;background:#fff;border:1px solid var(--linha);border-radius:8px}
-table{border-collapse:collapse;width:100%;font-size:.92rem}
-th,td{padding:10px 12px;text-align:left;white-space:nowrap;border-bottom:1px solid var(--linha)}
-th{background:#ece7f5;position:sticky;top:0}
-.vazio{padding:28px;text-align:center;color:var(--suave)}
-@media (max-width:560px){#logado{max-width:140px}}
+button,input,select{font:inherit;color:inherit}
+input,select{padding:9px 12px;border:1px solid var(--ln);border-radius:10px;background:var(--card)}
+:focus-visible{outline:3px solid #a58bd6;outline-offset:1px}
+button{cursor:pointer;border:0;background:none}
+.pill{border:1px solid var(--ac);color:var(--ac);border-radius:99px;padding:8px 20px;font-weight:600;display:inline-flex;align-items:center;gap:8px}
+.pill.f{background:var(--ac);color:#fff}
+.ic{width:20px;height:20px;flex:none}
+label{display:grid;gap:5px;font-size:.82rem;color:var(--mu);font-weight:600}
+.lg{min-height:100vh;display:grid;place-items:center;padding:20px}
+.lg form,.card{background:var(--card);border-radius:16px;padding:22px;box-shadow:0 2px 12px rgba(60,70,130,.07)}
+.lg form{width:100%;max-width:360px;display:grid;gap:14px}
+.er{color:#d33}.ok{color:#17a589}
+.app{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
+aside{background:linear-gradient(180deg,var(--sb1),var(--sb2));color:#fff;padding:26px 14px;display:flex;flex-direction:column;gap:6px}
+.logo{font-size:1.7rem;font-weight:300;letter-spacing:.2em;text-align:center;margin-bottom:26px}
+aside button{display:flex;gap:12px;align-items:center;color:#e3e7ff;border-radius:10px;padding:11px 14px;text-align:left}
+aside button:hover,aside button.on{background:rgba(255,255,255,.22);color:#fff}
+.fim{margin-top:auto!important}
+main{padding:26px 32px;min-width:0}
+.topo{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px}
+h1{margin:0;font-size:1.7rem}
+.dir{display:flex;align-items:center;gap:12px;font-size:.9rem;color:var(--mu)}
+.av{width:38px;height:38px;border-radius:50%;background:var(--sb2);color:#fff;display:grid;place-items:center;font-weight:600}
+#aviso{min-height:1.4em;margin-bottom:6px;font-weight:600}
+.fl{display:flex;flex-wrap:wrap;gap:12px;align-items:end;margin-bottom:16px}
+.kp{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:16px}
+.kp b{display:block;font-size:1.9rem;margin-top:4px}
+.gr{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px}
+h2{margin:0 0 10px;font-size:1.05rem}
+.bar{display:grid;grid-template-columns:120px 1fr 44px;gap:10px;align-items:center;font-size:.85rem;margin:9px 0}
+.bar span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar i{height:10px;background:var(--hd);border-radius:9px;overflow:hidden}
+.bar b{display:block;height:100%;background:var(--ac);border-radius:9px}
+.bar em{font-style:normal;text-align:right;font-weight:600}
+.tb{overflow-x:auto;padding:0}
+table{border-collapse:collapse;width:100%;font-size:.9rem}
+th,td{padding:11px 14px;text-align:left;white-space:nowrap;border-bottom:1px solid var(--ln)}
+th{background:var(--hd);font-weight:600}
+.vz{text-align:center;color:var(--mu);padding:28px}
+.tt{color:var(--mu);margin:0 0 10px}
+.uf{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:12px}
+#cols{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:6px}
+.ck{display:flex;align-items:center;gap:6px;font-size:.9rem;color:var(--tx);font-weight:400}
+@media(max-width:800px){.app{grid-template-columns:1fr}aside{flex-direction:row;overflow-x:auto;padding:10px}.logo{display:none}.fim{margin:0 0 0 auto!important}main{padding:18px 14px}#mail{display:none}}
 </style>
 </head>
 <body>
-<section class="login" id="telaLogin">
+<section class="lg" id="login">
   <form id="form">
     <h1>Entrar</h1>
     <label>Email<input id="email" type="email" autocomplete="username" required></label>
     <label>Senha<input id="senha" type="password" autocomplete="current-password" required></label>
-    <p class="erro" id="erro" role="alert"></p>
-    <button id="entrar">Entrar</button>
+    <p class="er" id="erro" role="alert"></p>
+    <button class="pill f" id="entrar">Entrar</button>
   </form>
 </section>
 
-<section id="telaApp" hidden>
-  <header>
-    <strong id="titulo">Minhas vendas</strong>
-    <div class="conta">
-      <span id="logado" title="Usuário logado"></span>
-      <button id="sair">Sair</button>
-    </div>
-  </header>
+<div class="app" id="app" hidden>
+  <aside>
+    <div class="logo">VENDAS</div>
+    <button data-ic="dash" data-v="dash" class="m">Dashboard</button>
+    <button data-ic="vendas" data-v="vendas">Vendas</button>
+    <button data-ic="users" data-v="users" class="m">Usuários</button>
+    <button data-ic="sair" id="sair" class="fim">Sair</button>
+  </aside>
   <main>
-    <div class="filtros">
-      <label>De<input type="date" id="ini"></label>
-      <label>Até<input type="date" id="fim"></label>
-      <label id="boxVend" hidden>Vendedor<select id="vend"></select></label>
-      <label id="boxBusca" hidden>Buscar<input id="busca" placeholder="Cliente, ID, cidade…"></label>
-      <button id="filtrar">Filtrar</button>
+    <div class="topo">
+      <h1 id="tit"></h1>
+      <div class="dir"><button class="pill" id="tema" data-ic="tema" title="Alternar claro/escuro">Tema</button><span id="mail"></span><div class="av" id="av"></div></div>
     </div>
-    <p class="total" id="total"></p>
-    <div class="tabela"><table id="tab"></table></div>
+    <div id="aviso" role="status"></div>
+
+    <section id="v-dash" hidden>
+      <div class="fl"><label>De<input type="date" id="d-ini"></label><label>Até<input type="date" id="d-fim"></label><button class="pill f" id="d-ok">Filtrar</button></div>
+      <div class="kp">
+        <div class="card"><span>Vendas</span><b id="k-total">0</b></div>
+        <div class="card"><span>Valor vendido</span><b id="k-valor">R$ 0,00</b></div>
+        <div class="card"><span>Prêmios</span><b id="k-premio">R$ 0,00</b></div>
+      </div>
+      <div class="gr">
+        <div class="card"><h2>Vendas por mês</h2><div id="c-mes"></div></div>
+        <div class="card"><h2>Por vendedor</h2><div id="c-vend"></div></div>
+        <div class="card"><h2>Por plano</h2><div id="c-plano"></div></div>
+        <div class="card"><h2>Por cidade</h2><div id="c-cidade"></div></div>
+        <div class="card"><h2>Por status</h2><div id="c-status"></div></div>
+      </div>
+    </section>
+
+    <section id="v-vendas" hidden>
+      <div class="fl">
+        <label>De<input type="date" id="v-ini"></label><label>Até<input type="date" id="v-fim"></label>
+        <label id="busca-box">Buscar<input id="busca" placeholder="Cliente, ID, cidade…"></label>
+        <button class="pill f" id="v-ok">Filtrar</button>
+      </div>
+      <p class="tt" id="v-total"></p>
+      <div class="card tb"><table id="tab"></table></div>
+    </section>
+
+    <section id="v-users" hidden>
+      <form class="card" id="uform">
+        <h2 id="u-tit">Novo usuário</h2>
+        <div class="uf">
+          <label>Email<input id="u-email" type="email" required></label>
+          <label>Senha<input id="u-senha" type="password" autocomplete="new-password" placeholder="Em branco = manter"></label>
+          <label>Perfil<select id="u-perfil"><option value="user">Usuário</option><option value="master">Master</option></select></label>
+          <label>Status<select id="u-status"><option value="ativo">Ativo</option><option value="inativo">Inativo</option></select></label>
+        </div>
+        <div id="cols-box" style="margin-top:12px"><label>Colunas que este usuário pode ver</label><div id="cols"></div></div>
+        <div style="margin-top:16px;display:flex;gap:10px"><button class="pill f">Salvar usuário</button><button type="button" class="pill" id="u-novo">Novo</button></div>
+      </form>
+      <p class="tt" style="margin-top:18px">Clique em uma linha para editar. Mudanças de colunas valem no próximo login do usuário.</p>
+      <div class="card tb"><table id="utab"></table></div>
+    </section>
   </main>
-</section>
+</div>
 
 <script>
 const API = 'https://script.google.com/macros/s/AKfycbzBsnteLfxQuwIjaqgwWTM8KQq5D7waeLgz61fmjZwB66z3W3Ol2HyaqMq5Zgc52sUp/exec'; // URL do Web App (termina em /exec)
-const $ = id => document.getElementById(id);
-let dados = null;
+const $ = id => document.getElementById(id), S = sessionStorage;
+const IC = {
+  dash: '<path d="M3 3h7v9H3zM14 3h7v5h-7zM14 12h7v9h-7zM3 16h7v5H3z"/>',
+  vendas: '<path d="M4 6h16M4 12h16M4 18h10"/>',
+  users: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.5-4 3.5-6 6.5-6s6 2 6.5 6M17 4.5a3.5 3.5 0 0 1 0 7M21.5 20c-.3-2.7-1.8-4.5-4-5.3"/>',
+  sair: '<path d="M10 4H5v16h5M15 8l4 4-4 4M19 12H9"/>',
+  tema: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5L19 19M5 19l1.5-1.5M17.5 6.5L19 5"/>'
+};
+document.querySelectorAll('[data-ic]').forEach(e => e.insertAdjacentHTML('afterbegin',
+  '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' + IC[e.dataset.ic] + '</svg>'));
 
-const chamar = async b => (await fetch(API, { method: 'POST', body: JSON.stringify(b) })).json();
+// tema claro/escuro
+const tema = t => { document.documentElement.dataset.tema = t; try { localStorage.tema = t; } catch {} };
+tema((() => { try { return localStorage.tema; } catch {} })() || (matchMedia('(prefers-color-scheme:dark)').matches ? 'escuro' : 'claro'));
+$('tema').onclick = () => tema(document.documentElement.dataset.tema === 'escuro' ? 'claro' : 'escuro');
+
+let lista = [], cat = {}, padrao = '', rows = null;
+const api = async b => (await fetch(API, { method: 'POST', body: JSON.stringify({ token: S.token, ...b }) })).json();
 const br = v => /^\d{4}-\d{2}-\d{2}$/.test(v) ? v.split('-').reverse().join('/') : v;
+const brl = n => n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+const hoje = new Date(), p2 = n => String(n).padStart(2, '0');
+const iso = d => `${d.getFullYear()}-${p2(d.getMonth() + 1)}-${p2(d.getDate())}`;
 
-$('form').onsubmit = async e => {
+function aviso(t, bom) { const a = $('aviso'); a.textContent = t; a.className = bom ? 'ok' : 'er'; setTimeout(() => a.textContent = '', 5000); }
+function ok(r) { if (r.expirada) { sair(); return false; } if (!r.ok) { aviso(r.erro); return false; } return true; }
+
+function tabela(el, cols, ls) {
+  el.replaceChildren();
+  if (!ls.length) { el.innerHTML = '<tbody><tr><td class="vz">Nenhum registro encontrado.</td></tr></tbody>'; return; }
+  const tr = (c, t) => { const r = document.createElement('tr'); c.forEach(x => { const e = document.createElement(t); e.textContent = br(x); r.append(e); }); return r; };
+  const h = document.createElement('thead'), b = document.createElement('tbody');
+  h.append(tr(cols, 'th')); ls.forEach(l => b.append(tr(l, 'td'))); el.append(h, b);
+}
+
+function barras(id, o, porMes) {
+  let e = Object.entries(o);
+  e = porMes ? e.sort((a, b) => a[0].localeCompare(b[0])).slice(-12) : e.sort((a, b) => b[1] - a[1]).slice(0, 10);
+  const m = Math.max(1, ...e.map(x => x[1])), box = $(id); box.replaceChildren();
+  if (!e.length) { box.innerHTML = '<p class="vz">Sem dados no período.</p>'; return; }
+  e.forEach(([k, n]) => {
+    const r = document.createElement('div'); r.className = 'bar';
+    r.innerHTML = '<span></span><i><b></b></i><em></em>';
+    r.children[0].textContent = porMes ? k.replace(/^(\d{4})-(\d{2})$/, '$2/$1') : k;
+    r.children[1].firstChild.style.width = (n / m * 100) + '%';
+    r.children[2].textContent = n; box.append(r);
+  });
+}
+
+// ===== navegação =====
+function ir(v) {
+  document.querySelectorAll('main>section').forEach(s => s.hidden = s.id !== 'v-' + v);
+  document.querySelectorAll('aside [data-v]').forEach(b => b.classList.toggle('on', b.dataset.v === v));
+  $('tit').textContent = { dash: 'Dashboard', vendas: S.perfil === 'master' ? 'Todas as vendas' : 'Minhas vendas', users: 'Usuários' }[v];
+  ({ dash: dashboard, vendas: carregar, users: carregarUsuarios })[v]();
+}
+function entrar() {
+  const m = S.perfil === 'master';
+  $('login').hidden = true; $('app').hidden = false;
+  document.querySelectorAll('.m').forEach(b => b.hidden = !m);
+  $('busca-box').hidden = !m;
+  $('mail').textContent = S.email; $('av').textContent = (S.email || '?')[0].toUpperCase();
+  $('v-ini').value = iso(new Date(hoje.getFullYear(), hoje.getMonth(), 1)); $('v-fim').value = iso(hoje);
+  $('d-ini').value = hoje.getFullYear() + '-01-01'; $('d-fim').value = iso(hoje);
+  ir(m ? 'dash' : 'vendas');
+}
+function sair() { S.clear(); $('app').hidden = true; $('login').hidden = false; $('senha').value = ''; }
+
+// ===== vendas =====
+async function carregar() {
+  $('v-total').textContent = 'Carregando…';
+  try {
+    const r = await api({ acao: 'vendas', ini: $('v-ini').value, fim: $('v-fim').value });
+    if (!ok(r)) { $('v-total').textContent = ''; return; }
+    rows = r; vrender();
+  } catch { $('v-total').textContent = 'Não foi possível carregar os dados.'; }
+}
+function vrender() {
+  const q = $('busca').value.trim().toLowerCase();
+  const ls = rows.linhas.filter(l => !q || l.some(c => c.toLowerCase().includes(q)));
+  $('v-total').textContent = ls.length + (ls.length === 1 ? ' venda no período' : ' vendas no período');
+  tabela($('tab'), rows.colunas, ls);
+}
+
+// ===== dashboard =====
+async function dashboard() {
+  try {
+    const r = await api({ acao: 'dashboard', ini: $('d-ini').value, fim: $('d-fim').value });
+    if (!ok(r)) return;
+    $('k-total').textContent = r.total; $('k-valor').textContent = brl(r.valor); $('k-premio').textContent = brl(r.premio);
+    barras('c-mes', r.mes, 1); barras('c-vend', r.vendedor); barras('c-plano', r.plano);
+    barras('c-cidade', r.cidade); barras('c-status', r.status);
+  } catch { aviso('Não foi possível carregar o dashboard.'); }
+}
+
+// ===== usuários =====
+async function carregarUsuarios() {
+  try {
+    const r = await api({ acao: 'usuarios' });
+    if (!ok(r)) return;
+    lista = r.usuarios; cat = r.catalogo; padrao = r.padrao;
+    if (!$('cols').children.length) Object.entries(cat).forEach(([l, n]) => {
+      const b = document.createElement('label'); b.className = 'ck';
+      const c = document.createElement('input'); c.type = 'checkbox'; c.value = l; b.append(c, n); $('cols').append(b);
+    });
+    tabela($('utab'), ['Email', 'Perfil', 'Status', 'Colunas liberadas'], lista.map(u => [u.email, u.perfil, u.status,
+      u.perfil === 'master' ? 'Todas' : (u.colunas || padrao).split(',').map(l => cat[l]).filter(Boolean).join(', ')]));
+    [...$('utab').tBodies[0].rows].forEach((r, i) => { if (lista[i]) { r.style.cursor = 'pointer'; r.onclick = () => editar(lista[i]); } });
+    novo();
+  } catch { aviso('Não foi possível carregar os usuários.'); }
+}
+function marcar(csv) { const s = csv.split(','); document.querySelectorAll('#cols input').forEach(c => c.checked = s.includes(c.value)); }
+function novo() {
+  $('u-tit').textContent = 'Novo usuário'; $('u-email').value = ''; $('u-email').readOnly = false; $('u-senha').value = '';
+  $('u-perfil').value = 'user'; $('u-status').value = 'ativo'; $('cols-box').hidden = false; marcar(padrao);
+}
+function editar(u) {
+  $('u-tit').textContent = 'Editar usuário'; $('u-email').value = u.email; $('u-email').readOnly = true; $('u-senha').value = '';
+  $('u-perfil').value = u.perfil; $('u-status').value = u.status; $('cols-box').hidden = u.perfil === 'master';
+  marcar(u.colunas || padrao); scrollTo({ top: 0, behavior: 'smooth' });
+}
+$('u-perfil').onchange = () => $('cols-box').hidden = $('u-perfil').value === 'master';
+$('u-novo').onclick = novo;
+$('uform').onsubmit = async e => {
   e.preventDefault();
-  $('erro').textContent = '';
-  $('entrar').disabled = true;
+  try {
+    const r = await api({ acao: 'salvarUsuario', email: $('u-email').value, senha: $('u-senha').value,
+      perfil: $('u-perfil').value, status: $('u-status').value,
+      colunas: [...document.querySelectorAll('#cols input:checked')].map(c => c.value) });
+    if (!ok(r)) return;
+    aviso('Usuário salvo.', true); carregarUsuarios();
+  } catch { aviso('Não foi possível salvar o usuário.'); }
+};
+
+// ===== login e eventos =====
+$('form').onsubmit = async e => {
+  e.preventDefault(); $('erro').textContent = ''; $('entrar').disabled = true;
   try {
     const email = $('email').value.trim();
-    const r = await chamar({ acao: 'login', email, senha: $('senha').value });
-    if (r.ok) { sessionStorage.token = r.token; sessionStorage.email = email.toLowerCase(); iniciar(); }
+    const r = await api({ acao: 'login', email, senha: $('senha').value });
+    if (r.ok) { S.token = r.token; S.perfil = r.perfil; S.email = email.toLowerCase(); entrar(); }
     else $('erro').textContent = r.erro;
   } catch { $('erro').textContent = 'Sem conexão com o servidor.'; }
   $('entrar').disabled = false;
 };
-
-function iniciar() {
-  const h = new Date(), p = n => String(n).padStart(2, '0');
-  $('ini').value = `${h.getFullYear()}-${p(h.getMonth() + 1)}-01`;
-  $('fim').value = `${h.getFullYear()}-${p(h.getMonth() + 1)}-${p(h.getDate())}`;
-  $('logado').textContent = sessionStorage.email || '';
-  $('logado').title = sessionStorage.email || '';
-  $('telaLogin').hidden = true; $('telaApp').hidden = false;
-  carregar();
-}
-
-async function carregar() {
-  $('total').textContent = 'Carregando…';
-  try {
-    const r = await chamar({ acao: 'vendas', token: sessionStorage.token, ini: $('ini').value, fim: $('fim').value });
-    if (r.expirada) return sair();
-    if (!r.ok) { $('total').textContent = r.erro; return; }
-    dados = r;
-    const master = r.perfil === 'master';
-    $('titulo').textContent = master ? 'Painel geral' : 'Minhas vendas';
-    $('boxVend').hidden = $('boxBusca').hidden = !master;
-    if (master) {
-      const i = r.colunas.findIndex(c => c.toLowerCase() === 'vendedor');
-      const nomes = i < 0 ? [] : [...new Set(r.linhas.map(l => l[i]))].sort();
-      $('vend').replaceChildren(new Option('Todos', ''), ...nomes.map(n => new Option(n, n)));
-    }
-    render();
-  } catch { $('total').textContent = 'Não foi possível carregar os dados.'; }
-}
-
-function render() {
-  const master = dados.perfil === 'master';
-  const iV = dados.colunas.findIndex(c => c.toLowerCase() === 'vendedor');
-  const q = $('busca').value.trim().toLowerCase(), vend = $('vend').value;
-  const ls = dados.linhas.filter(l =>
-    (!master || !vend || l[iV] === vend) &&
-    (!master || !q || l.some(c => c.toLowerCase().includes(q))));
-  $('total').textContent = ls.length + (ls.length === 1 ? ' venda no período' : ' vendas no período');
-  const tab = $('tab'); tab.replaceChildren();
-  if (!ls.length) { tab.innerHTML = '<tr><td class="vazio">Nenhuma venda encontrada neste período.</td></tr>'; return; }
-  const tr = (cels, tag) => { const r = document.createElement('tr');
-    cels.forEach(c => { const e = document.createElement(tag); e.textContent = br(c); r.append(e); }); return r; };
-  const th = document.createElement('thead'); th.append(tr(dados.colunas, 'th'));
-  const tb = document.createElement('tbody'); ls.forEach(l => tb.append(tr(l, 'td')));
-  tab.append(th, tb);
-}
-
-function sair() {
-  sessionStorage.removeItem('token'); sessionStorage.removeItem('email'); dados = null;
-  $('telaApp').hidden = true; $('telaLogin').hidden = false; $('senha').value = '';
-}
-
-$('filtrar').onclick = carregar;
-$('busca').oninput = $('vend').onchange = () => dados && render();
-$('sair').onclick = sair;
-if (sessionStorage.token) iniciar();
+document.querySelectorAll('aside [data-v]').forEach(b => b.onclick = () => ir(b.dataset.v));
+$('sair').onclick = sair; $('v-ok').onclick = carregar; $('d-ok').onclick = dashboard;
+$('busca').oninput = () => rows && vrender();
+if (S.token) entrar();
 </script>
 </body>
 </html>
