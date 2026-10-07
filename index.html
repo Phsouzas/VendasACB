@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src https://script.google.com https://script.googleusercontent.com; base-uri 'none'; form-action 'none'">
 <title>Portal de vendas</title>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
@@ -194,7 +197,14 @@ function entrar() {
   $('d-ini').value = hoje.getFullYear() + '-01-01'; $('d-fim').value = iso(hoje);
   ir(m ? 'dash' : 'vendas');
 }
-function sair() { S.clear(); $('app').hidden = true; $('login').hidden = false; $('senha').value = ''; }
+function sair() {
+  const t = S.token; S.clear();
+  if (t) fetch(API, { method: 'POST', body: JSON.stringify({ acao: 'sair', token: t }) }).catch(() => {});
+  rows = null; lista = [];
+  ['tab', 'utab', 'c-mes', 'c-vend', 'c-plano', 'c-cidade', 'c-status'].forEach(id => $(id).replaceChildren());
+  ['k-total', 'k-valor', 'k-premio', 'v-total', 'mail'].forEach(id => $(id).textContent = '');
+  $('app').hidden = true; $('login').hidden = false; $('senha').value = '';
+}
 
 // ===== vendas =====
 async function carregar() {
@@ -209,6 +219,7 @@ function vrender() {
   const q = $('busca').value.trim().toLowerCase();
   const ls = rows.linhas.filter(l => !q || l.some(c => c.toLowerCase().includes(q)));
   $('v-total').textContent = ls.length + (ls.length === 1 ? ' venda no período' : ' vendas no período');
+  if (rows.truncado) $('v-total').textContent += ' (exibindo só as mais recentes; reduza o período para ver o restante)';
   tabela($('tab'), rows.colunas, ls);
 }
 
@@ -276,6 +287,11 @@ $('form').onsubmit = async e => {
 document.querySelectorAll('aside [data-v]').forEach(b => b.onclick = () => ir(b.dataset.v));
 $('sair').onclick = sair; $('v-ok').onclick = carregar; $('d-ok').onclick = dashboard;
 $('busca').oninput = () => rows && vrender();
+try { if (top !== self) top.location = self.location; } catch {}
+let ocioso;
+const zerar = () => { clearTimeout(ocioso); ocioso = setTimeout(() => { if (S.token) { sair(); $('erro').textContent = 'Sessão encerrada por inatividade.'; } }, 20 * 60 * 1000); };
+['click', 'keydown', 'mousemove', 'touchstart'].forEach(ev => addEventListener(ev, zerar, { passive: true }));
+zerar();
 if (S.token) entrar();
 </script>
 </body>
