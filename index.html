@@ -144,7 +144,7 @@ aside a.novo{display:flex;gap:12px;align-items:center;margin-top:12px;background
     <button data-ic="dash" data-v="dash" class="m">Dashboard</button>
     <button data-ic="lista" data-v="vendas">Indicações</button>
     <button data-ic="users" data-v="users" class="m">Usuários</button>
-    <a class="novo" data-ic="mais" href="https://forms.gle/2z9oZXbyMoCYeLpV9" target="_blank" rel="noopener noreferrer">Nova indicação</a>
+    <a class="novo" data-ic="mais" target="_blank" rel="noopener noreferrer">Nova indicação</a>
   </aside>
   <main>
     <header class="topo">
@@ -218,7 +218,7 @@ aside a.novo{display:flex;gap:12px;align-items:center;margin-top:12px;background
   <nav id="bn">
     <button data-ic="dash" data-v="dash" class="m">Dashboard</button>
     <button data-ic="lista" data-v="vendas">Indicações</button>
-    <a data-ic="mais" href="https://forms.gle/2z9oZXbyMoCYeLpV9" target="_blank" rel="noopener noreferrer">Nova indicação</a>
+    <a data-ic="mais" target="_blank" rel="noopener noreferrer">Nova indicação</a>
     <button data-ic="users" data-v="users" class="m">Usuários</button>
   </nav>
 </div>
@@ -292,6 +292,7 @@ function ir(v) {
 }
 function entrar() {
   const m = S.perfil === 'master';
+  document.querySelectorAll('a[data-ic="mais"]').forEach(a => { if (S.form) a.href = S.form; else a.hidden = true; });
   $('login').hidden = true; $('app').hidden = false;
   document.querySelectorAll('.m').forEach(b => b.hidden = !m);
   $('ola').textContent = 'Olá, ' + (S.nome || 'bem-vindo') + '!';
@@ -308,6 +309,7 @@ function sair() {
   rows = null; lista = [];
   ['tab', 'utab', 'c-mes', 'c-vend', 'c-plano', 'c-cidade', 'c-status'].forEach(id => $(id).replaceChildren());
   ['k-total', 'k-valor', 'k-premio', 'v-total', 'av', 'ola'].forEach(id => $(id).textContent = '');
+  document.querySelectorAll('a[data-ic="mais"]').forEach(a => { a.removeAttribute('href'); a.hidden = false; });
   $('menu').hidden = true; $('app').hidden = true; $('login').hidden = false; $('senha').value = '';
 }
 
@@ -477,7 +479,7 @@ $('form').onsubmit = async e => {
     const email = $('email').value.trim();
     const r = await api({ acao: 'login', email, senha: $('senha').value });
     if (r.ok) {
-      S.token = r.token; S.perfil = r.perfil; S.email = email.toLowerCase(); S.nome = r.nome || '';
+      S.token = r.token; S.perfil = r.perfil; S.email = email.toLowerCase(); S.nome = r.nome || ''; S.form = r.form || '';
       guarda('email', $('lembrar').checked ? email : undefined); entrar();
     } else $('erro').textContent = r.erro;
   } catch { $('erro').textContent = 'Sem conexão com o servidor.'; }
